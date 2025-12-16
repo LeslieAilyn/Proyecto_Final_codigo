@@ -1,0 +1,165 @@
+//struct
+typedef struct
+{
+ char matricula[15];
+ char nombre [30];
+ char apellido_p [30];
+ char apellido_m[30];
+ float calificacion;
+}Alumno;
+typedef struct
+{
+ char nombre [30];
+ char profesor [50];
+ int clave;
+ int total_inscritos;
+ Alumno alumno[15];
+}Curso;
+//prototipos
+int menu();
+Alumno* registro_sistema();
+void limpiar_buffer();
+void agregar_alumno(Alumno *,int *,int *);
+void imprimir_alumno(Alumno alum);
+Alumno* archivo_alumno(Alumno* alum, int tipo, const char* 
+registro);
+void archivo();
+int menu()
+{
+ int ops;
+ puts("\n\t\t\tMENU\n");
+ puts("1.\tREGISTRO AL SISTEMA\n");
+ puts("2.\tINSCRIBIRSE A UN CURSO\n");
+ puts("3.\tOBTENER LISTA DE ESTUDIANTE\n");
+ puts("4.\tCONSULTAR PROMEDIO DE CALIFICACIONES\n");
+ puts("5.\tGENERAR BOLETA DEL ESTUDIANTE\n");
+ puts("6.\tCONSULTAR CURSO CON MAS ALUMNOS APROBADOS\n");
+ puts("7.\tSALIR\n");
+ puts("\tElige una opcion del menu\n");
+ scanf("%d",&ops);
+ return ops;
+ }
+Alumno* registro_sistema()
+{
+ //generar memoria dinamica
+Alumno *alu=malloc(sizeof(Alumno));
+ if (alu==NULL)
+ {
+ printf("No se encontro memoria\n");
+ return NULL;
+ }
+ puts("DATOS GENERALES DEL ALUMNO\n");
+ printf("\tMatricula:");
+ scanf("%s",alu->matricula);
+ limpiar_buffer();
+ printf("\tNombre:\n");
+ fgets(alu->nombre,30,stdin);
+ limpiar_buffer();
+ //alu->nombre[strcspn(alu->nombre,"\n")]=0;
+ printf("\tApellido Paterno\n");
+ fgets(alu->apellido_p,30,stdin);
+ limpiar_buffer();
+ printf("\tApellido Materno\n");
+ fgets(alu->apellido_m,30,stdin);
+ limpiar_buffer();
+}
+void limpiar_buffer()
+{
+ int c;
+ while ((c=getchar()!='\n')&&c!=EOF);
+}
+void agregar_alumno(Alumno *alum,int *indice,int *tam)
+{
+ if (*indice==*tam)
+ {
+ printf("Se ha actualizado el tamanio\n");
+ //casteo-> chechar en memoria dinamica
+ int nuevoTam=(*tam/2)+ *tam;
+ Alumno * al=realloc(alum,nuevoTam*sizeof(Alumno));
+ if (al==NULL)
+ {
+ printf("No se asigno memoria\n");
+ return;
+ }
+ alum=al;
+*tam=nuevoTam;
+ }
+ //agregar nombre de struct
+ Alumno * alumno;
+ //registro_sistema es la funcion donde
+ //estan los datos que va a mostrar en pantalla.
+ alumno=registro_sistema();
+ alum[*indice]=*alumno;
+ (*indice)++;
+ free(alumno);
+}
+Alumno* archivo_alumno(Alumno* alum, int tipo, const char* 
+registro)
+{
+ FILE *archivo=fopen(registro,"r");
+ if (archivo==NULL)
+ {
+ printf("No se encotro archivo\n");
+ return 0;
+ }
+ fwrite(&tipo,sizeof(int),1,archivo);
+if (tipo>0)
+{
+ fwrite(alum,sizeof(Alumno),tipo,archivo);
+}
+//cerrar el archivo
+fclose(archivo);
+printf("%s\n",registro);
+}//cierre
+void archivo()
+{
+ int tam=30;
+ int tipo=0;
+ Alumno * alumno=NULL;
+ const char *registro;
+ Alumno *alum;
+ alumno=archivo_alumno(&alum,tipo,&registro);
+}
+#include <stdio.h>
+int main( void)
+{
+ int ops;
+ do
+ {
+ ops=menu();
+ Alumno alum;
+ int* indice;
+ int *tam;
+ const char *registro;
+ int tipo;
+ switch(ops)
+ {
+ case 1:
+ puts("\tREGISTRO AL SISTEMA\n");
+ agregar_alumno(&alum,indice,tam);
+ // archivo_alumno( &alum,tipo,&registro);
+ //archivo();
+ break;
+ case 2:
+ puts("\tINSCRIBIRSE A UN CURSO\n");
+ break;
+ case 3:
+ puts("\tOBTENER LISTA DE ESTUDIANTE\n");
+ break;
+ case 4:
+ puts("\tCONSULTAR PROMEDIO DE CALIFICACIONES\n");
+ break;
+ case 5:
+ puts("\tGENERAR BOLETA DEL ESTUDIANTE\n");
+ break;
+ case 6:
+ puts("\tCONSULTAR CURSO CON MAS ALUMNOS APROBADOS\n");
+ break;
+ case 7:
+ return 0;
+ break;
+ default:
+ puts("Error elige una opcion del menu\n");
+ }//switch
+}while (ops<7);
+}//cierre del programa
